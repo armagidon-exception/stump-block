@@ -1,0 +1,3 @@
+[submodule "parsers/tree-sitter-c-sharp"]
+	path = parsers/tree-sitter-c-sharp
+	url = https://github.com/tree-sitter/tree-sitter-c-sharp
