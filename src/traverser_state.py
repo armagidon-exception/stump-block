@@ -1,16 +1,10 @@
-from abc import ABC
+from enum import Enum, auto, unique
 
-
-class State(ABC):
-    def __init__(self, name: str) -> None:
-        super().__init__()
-        self.name = name
-
-class Linear(State):
-    def __init__(self) -> None:
-        super().__init__("linear")
-
-class InputState(State):
-    def __init__(self) -> None:
-        super().__init__("input")
-        self.vars = []
+@unique
+class State(Enum):
+    LINEAR =  auto()
+    INPUT = auto()
+    OUTPUT = auto()
+    CONDITION = auto()
+    CONDITION_CONSEQ = auto()
+    CONDITION_ALTERNATIVE = auto()

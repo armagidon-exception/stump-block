@@ -1,15 +1,13 @@
 from typing import cast
 from tree_sitter import Language, TreeCursor
 from blocks import Block, IOBlock, SingleBlock, SubRoutineBlock
-from traverser_state import InputState, Linear, State
-
+from traverser_state import State
 
 class Traverser(object):
     def __init__(self, lang: Language) -> None:
         self.lang = lang
-        state_stack: list[State] = [Linear()]
+        state_stack: list[State] = [State.LINEAR]
         self.state_stack = state_stack
-        # linear, preloop, postloop, iterator, conditional, io
 
     def traverse(self, cursor: TreeCursor, blocks: list[Block]):
         depth = 0
