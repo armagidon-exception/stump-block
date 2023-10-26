@@ -8,12 +8,13 @@ from pprint import pprint
 from traverser_state import State
 import traverser_handler
 
-Language.build_library("build/languages.so", ["parsers/tree-sitter-c-sharp"])
-CS_LANGUAGE = Language("build/languages.so", "c_sharp")
-parser = Parser()
-parser.set_language(CS_LANGUAGE)
 
 if __name__ == "__main__":
+    Language.build_library("build/languages.so", ["parsers/tree-sitter-c-sharp"])
+    CS_LANGUAGE = Language("build/languages.so", "c_sharp")
+    parser = Parser()
+    parser.set_language(CS_LANGUAGE)
+
     arg_parser = ArgumentParser(
         prog="stumpblock", description="Converts C# code to block diagrams"
     )

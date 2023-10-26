@@ -12,3 +12,4 @@ class State(Enum):
     PARAMETER_LOOP = auto()
     PRE_LOOP = auto()
     POST_LOOP = auto()
+    LOOPING = auto()

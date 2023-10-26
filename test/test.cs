@@ -5,11 +5,16 @@ namespace Namespace
     internal class Program
     {
         static void Main(string[] args) {
-            while (false)
-            {
-                Console.WriteLine("PR");
-            }
 
+            //stumpblock-meta-input-start
+            double x = double.Parse(Console.ReadLine());
+            //stumpblock-meta-input-end
+
+            if (true) {
+                Console.WriteLine("1");
+            } else {
+                Console.WriteLine("2");
+            }
         }
     }
 }

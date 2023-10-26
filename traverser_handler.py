@@ -1,5 +1,3 @@
-from os import statvfs
-from re import S
 from typing import cast
 from tree_sitter import TreeCursor, Node
 from blocks import Block
@@ -34,6 +32,8 @@ def handle_node(
         or current_state == State.CONDITION_ALTERNATIVE
     ):
         handle_conditional(current, text, state_stack, route_stack, enter)
+    elif current_state == State.PRE_LOOP:
+        handle_loop(current, text, state_stack, route_stack, enter)
 
 
 def handle_linear_mode(
@@ -59,6 +59,11 @@ def handle_linear_mode(
         block.routes["alternative"] = []
         route.append(block)
         state_stack.append(State.CONDITION)
+    elif current.type == "while_statement":
+        block = Block("pre_loop", current.children[0].text.decode())
+        block.routes["loop"] = []
+        route.append(block)
+        state_stack.append(State.PRE_LOOP)
 
 
 def handle_input_mode(
@@ -115,3 +120,16 @@ def handle_conditional(
         elif enter:
             handle_linear_mode(current, text, state_stack, route_stack[-1])
 
+
+def handle_loop(current, text, state_stack, route_stack: list[list[Block]], enter):
+    if not current.parent:
+        return
+    current_state = state_stack[-1]
+    if current_state == State.PRE_LOOP:
+        if (
+            enter
+            and current.parent.type == "while_statement"
+            and current.parent.children[1].id == current.id
+        ):
+            state_stack.append(State.LOOPING)
+            route_stack.append(route_stack[-1][-1].routes["loop"])
