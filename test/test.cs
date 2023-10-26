@@ -12,8 +12,10 @@ namespace Namespace
 
             if (true) {
                 Console.WriteLine("1");
-            } else {
+            } else if (false){
                 Console.WriteLine("2");
+            } else {
+                Console.WriteLine("3");
             }
         }
     }

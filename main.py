@@ -2,12 +2,12 @@
 
 from tree_sitter import Language, Parser
 from argparse import ArgumentParser
+from blocks import Block
 from traverser import traverse
 
 from pprint import pprint
-from traverser_state import State
-import traverser_handler
-
+from traverser_state import State, StateHolder
+from traverser_handler import StateMachineTraverser
 
 if __name__ == "__main__":
     Language.build_library("build/languages.so", ["parsers/tree-sitter-c-sharp"])
@@ -25,13 +25,12 @@ if __name__ == "__main__":
         '((method_declaration name: (identifier) @name (#eq? @name "Main")) @method)'
     )
 
-    state_stack = [State.LINEAR]
-    blocks = []
-    route_stack = [blocks]
+    blocks:list[Block] = []
+    traverse_handler = StateMachineTraverser([StateHolder(State.LINEAR, blocks)])
 
     with open(args.filename, "rb") as file:
         text = file.read()
         tree = parser.parse(text)
         cursor = query.captures(tree.root_node)[0][0].walk()
-        traverse(cursor, lambda c, n, t, e, d: traverser_handler.handle_node(c, n, t, e, state_stack, route_stack, d))
+        traverse(cursor, traverse_handler)
         pprint(blocks)
