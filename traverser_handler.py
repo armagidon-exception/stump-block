@@ -1,7 +1,8 @@
+from os import statvfs
+from re import S
 from typing import cast
 from tree_sitter import TreeCursor, Node
 from blocks import Block
-from pprint import pprint
 
 from traverser_state import State
 
@@ -13,6 +14,7 @@ def handle_node(
     enter: bool,
     state_stack: list[State],
     route_stack: list[list[Block]],
+    depth,
 ):
     current_state = state_stack[-1]
     if current_state == State.LINEAR and enter:
@@ -26,7 +28,11 @@ def handle_node(
         handle_input_mode(current, text, state_stack, route_stack[-1])
     elif current_state == State.OUTPUT and enter:
         handle_output_mode(current, text, state_stack, route_stack[-1])
-    elif current_state == State.CONDITION or current_state == State.CONDITIONAL_CONSEQUENCE or current_state == State.CONDITION_ALTERNATIVE:
+    elif (
+        current_state == State.CONDITION
+        or current_state == State.CONDITIONAL_CONSEQUENCE
+        or current_state == State.CONDITION_ALTERNATIVE
+    ):
         handle_conditional(current, text, state_stack, route_stack, enter)
 
 
@@ -85,23 +91,27 @@ def handle_conditional(
 ):
     if not current.parent:
         return
+    current_state = state_stack[-1]
+    conseq = current.parent.child_by_field_name("consequence")
+    alter = current.parent.child_by_field_name("alternative")
+    if current_state == State.CONDITION:
+        if enter and conseq and current.id == conseq.id:
+            state_stack.append(State.CONDITIONAL_CONSEQUENCE)
+            route_stack.append(route_stack[-1][-1].routes["consequence"])
+        elif enter and alter and current.id == alter.id:
+            state_stack.append(State.CONDITION_ALTERNATIVE)
+            route_stack.append(route_stack[-1][-1].routes["alternative"])
+    elif (
+        current_state == State.CONDITIONAL_CONSEQUENCE
+        or current_state == State.CONDITION_ALTERNATIVE
+    ):
+        if (
+            not enter
+            and (conseq and current.id == conseq.id)
+            or (alter and current.id == alter.id)
+        ):
+            state_stack.pop()
+            route_stack.pop()
+        elif enter:
+            handle_linear_mode(current, text, state_stack, route_stack[-1])
 
-    # current_state = state_stack[-1]
-    # conseq = current.parent.child_by_field_name("consequence")
-    # alter = current.parent.child_by_field_name("alternative")
-    # if current_state == State.CONDITION:
-    #     if enter and conseq and current.id == conseq.id:
-    #         route_stack.append(route_stack[-1][-1].routes["consequence"])
-    #         state_stack.append(State.CONDITIONAL_CONSEQUENCE)
-    #     elif enter and alter and current.id == alter.id:
-    #         route_stack.append(route_stack[-1][-1].routes["alternative"])
-    #         state_stack.append(State.CONDITION_ALTERNATIVE)
-    # elif current_state == State.CONDITIONAL_CONSEQUENCE or current_state == State.CONDITION_ALTERNATIVE:
-    #     if not enter and conseq and current.id == conseq.id:
-    #         route_stack.pop()
-    #         state_stack.pop()
-    #     elif not enter and alter and current.id == alter.id:
-    #         route_stack.pop()
-    #         state_stack.pop()
-    #     elif enter:
-    #         handle_linear_mode(current, text, state_stack, route_stack[-1])

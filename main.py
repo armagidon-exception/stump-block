@@ -26,10 +26,11 @@ if __name__ == "__main__":
 
     state_stack = [State.LINEAR]
     blocks = []
+    route_stack = [blocks]
 
     with open(args.filename, "rb") as file:
         text = file.read()
         tree = parser.parse(text)
         cursor = query.captures(tree.root_node)[0][0].walk()
-        traverse(cursor, lambda c, n, t, e: traverser_handler.handle_node(c, n, t, e, state_stack, [blocks]))
+        traverse(cursor, lambda c, n, t, e, d: traverser_handler.handle_node(c, n, t, e, state_stack, route_stack, d))
         pprint(blocks)
