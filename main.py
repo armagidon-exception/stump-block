@@ -1,5 +1,6 @@
 #!/bin/python3
 
+import os
 from tree_sitter import Language, Parser
 from argparse import ArgumentParser
 from blocks import Block
@@ -10,6 +11,7 @@ from traverser_state import State, StateHolder
 from traverser_handler import StateMachineTraverser
 
 if __name__ == "__main__":
+    os.mkdir("build")
     Language.build_library("build/languages.so", ["parsers/tree-sitter-c-sharp"])
     CS_LANGUAGE = Language("build/languages.so", "c_sharp")
     parser = Parser()
