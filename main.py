@@ -29,11 +29,11 @@ if __name__ == "__main__":
     )
 
     blocks:list[Block] = []
-    traverse_handler = StateMachineTraverser([StateHolder(State.LINEAR, blocks)])
 
     with open(args.filename, "rb") as file:
         text = file.read()
         tree = parser.parse(text)
         cursor = query.captures(tree.root_node)[0][0].walk()
+        traverse_handler = StateMachineTraverser([StateHolder(State.LINEAR, tree.root_node, blocks)])
         traverse(cursor, traverse_handler)
         pprint(blocks)
