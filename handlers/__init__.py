@@ -34,5 +34,5 @@ class StateHandler(ABC):
         return context.state_stack[-1].route
 
     @staticmethod
-    def get_last_block(context: TraverseContext):
+    def get_last_block(context: TraverseContext) -> Block:
         return context.state_stack[-1].route[-1]

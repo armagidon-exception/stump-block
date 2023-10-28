@@ -17,4 +17,16 @@ class Block(object):
     def conditional_from_if_statement(node: Node):
         condition_node = node.child_by_field_name('condition')
         assert condition_node
-        return Block('if_statement', condition_node.text.decode(), {'consequence': [], 'alternative': []})
+        return Block('condition', condition_node.text.decode(), {'consequence': [], 'alternative': []})
+
+    @staticmethod
+    def loop_from_while_statement(node: Node):
+        condition_node = node.child(0)
+        assert condition_node
+        return Block('preloop', condition_node.text.decode(), {'body': []})
+
+    @staticmethod
+    def loop_from_do_statement(node: Node):
+        condition_node = node.child(4)
+        assert condition_node
+        return Block('postloop', condition_node.text.decode(), {'body': []})

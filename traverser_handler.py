@@ -4,6 +4,7 @@ from handlers import StateHandler, TraverseContext
 from handlers.conditional import ConditionalStateHandler
 from handlers.input import InputStateHandler
 from handlers.linear import LinearStateHandler
+from handlers.loop import LoopStateHandler
 from handlers.output import OutputStateHandler
 from traverser import TraverseHandler
 from traverser_state import State, StateHolder
@@ -18,6 +19,8 @@ class StateMachineTraverser(TraverseHandler):
             State.INPUT: InputStateHandler(),
             State.OUTPUT: OutputStateHandler(),
             State.CONDITION: ConditionalStateHandler(),
+            State.PRE_LOOP: LoopStateHandler(),
+            State.POST_LOOP: LoopStateHandler(),
         }
 
     def handle_discover(self, cursor: TreeCursor, prev: Node, prev_name: str | None):

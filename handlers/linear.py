@@ -47,3 +47,11 @@ class LinearStateHandler(StateHandler):
             block = Block.conditional_from_if_statement(context.current_node)
             route.append(block)
             context.state_stack.append(StateHolder(State.CONDITION, context.current_node, route))
+        elif context.current_node.type == "while_statement":
+            block = Block.loop_from_while_statement(context.current_node)
+            route.append(block)
+            context.state_stack.append(StateHolder(State.PRE_LOOP, context.current_node, route))
+        elif context.current_node.type == "do_statement":
+            block = Block.loop_from_do_statement(context.current_node)
+            route.append(block)
+            context.state_stack.append(StateHolder(State.POST_LOOP, context.current_node, route))
