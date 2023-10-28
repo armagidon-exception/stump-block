@@ -1,6 +1,6 @@
 from tree_sitter.binding import Node, TreeCursor
 
-from handlers import StateHandler
+from handlers import StateHandler, TraverseContext
 from handlers.conditional import ConditionalStateHandler
 from handlers.input import InputStateHandler
 from handlers.linear import LinearStateHandler
@@ -20,30 +20,20 @@ class StateMachineTraverser(TraverseHandler):
             State.CONDITION: ConditionalStateHandler(),
         }
 
-    def _handle_enter(
-        self, cursor: TreeCursor, current: Node, prev: Node | None, text: str
-    ):
+    def handle_discover(self, cursor: TreeCursor, prev: Node, prev_name: str | None):
         current_state = self.state_stack[-1]
         self.state_handlers[current_state.type]._handle(
-            cursor.node,
-            prev,
-            cursor.field_name,
-            current.text.decode(),
-            self.state_stack,
-            True,
+            TraverseContext(
+                cursor.node, prev, cursor.field_name, prev_name, self.state_stack, True
+            )
         )
 
-        #print(self.state_stack)
-
-    def _handle_leave(
-        self, cursor: TreeCursor, current: Node, prev: Node | None, text: str
-    ):
+    def handle_retreating(self, cursor: TreeCursor, prev: Node, prev_name: str | None):
         current_state = self.state_stack[-1]
         self.state_handlers[current_state.type]._handle(
-            cursor.node,
-            prev,
-            cursor.field_name,
-            current.text.decode(),
-            self.state_stack,
-            False,
+            TraverseContext(
+                cursor.node, prev, cursor.field_name, prev_name, self.state_stack, False
+            )
         )
+        if current_state.marker.id == cursor.node.id:
+            self.state_stack.pop()
