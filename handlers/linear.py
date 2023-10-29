@@ -1,7 +1,7 @@
 from blocks import Block
-from handlers import TraverseContext
-from traverser_handler import StateHandler
-from traverser_state import State, StateHolder
+from traversing import TraverseContext
+from traversing.traverser_handler import StateHandler
+from traversing.traverser_state import State, StateHolder
 
 
 class LinearStateHandler(StateHandler):

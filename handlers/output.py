@@ -1,5 +1,6 @@
 from blocks import Block
-from handlers import StateHandler, TraverseContext
+from handlers import StateHandler
+from traversing import TraverseContext
 
 
 class OutputStateHandler(StateHandler):

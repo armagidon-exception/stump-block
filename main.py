@@ -1,14 +1,16 @@
-#!/bin/python3
+#!/bin/python3 -B
 
-import os
-from tree_sitter import Language, Parser
 from argparse import ArgumentParser
-from blocks import Block
-from traverser import traverse
-
+import os
 from pprint import pprint
-from traverser_state import State, StateHolder
-from traverser_handler import StateMachineTraverser
+
+from tree_sitter import Language, Parser
+from backend.schemdraw_backend import render
+
+from blocks import Block
+from traversing.traverser import *
+from traversing.traverser_handler import StateMachineTraverser
+from traversing.traverser_state import State, StateHolder
 
 if __name__ == "__main__":
     if not os.path.exists("build"):
@@ -21,7 +23,8 @@ if __name__ == "__main__":
     arg_parser = ArgumentParser(
         prog="stumpblock", description="Converts C# code to block diagrams"
     )
-    arg_parser.add_argument("filename")
+    arg_parser.add_argument("input")
+    arg_parser.add_argument('output')
     args = arg_parser.parse_args()
 
     query = CS_LANGUAGE.query(
@@ -30,10 +33,13 @@ if __name__ == "__main__":
 
     blocks:list[Block] = []
 
-    with open(args.filename, "rb") as file:
+    with open(args.input, "rb") as file:
         text = file.read()
         tree = parser.parse(text)
         cursor = query.captures(tree.root_node)[0][0].walk()
         traverse_handler = StateMachineTraverser([StateHolder(State.LINEAR, cursor.node, blocks)])
+        blocks.append(Block("start", "Start"))
         traverse(cursor, traverse_handler)
+        blocks.append(Block("end", "End"))
         pprint(blocks)
+        render(args.output, blocks)

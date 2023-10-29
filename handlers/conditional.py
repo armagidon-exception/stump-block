@@ -1,7 +1,8 @@
 from blocks import Block
-from handlers import StateHandler, TraverseContext
+from handlers import StateHandler
 from handlers.linear import LinearStateHandler
-from traverser_state import State, StateHolder
+from traversing import TraverseContext
+from traversing.traverser_state import State, StateHolder
 
 
 class ConditionalStateHandler(StateHandler):

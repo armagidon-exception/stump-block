@@ -1,5 +1,6 @@
-from handlers import StateHandler, TraverseContext
-from traverser_state import State, StateHolder
+from handlers import StateHandler
+from traversing import TraverseContext
+from traversing.traverser_state import State, StateHolder
 
 
 class LoopStateHandler(StateHandler):

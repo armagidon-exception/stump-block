@@ -1,13 +1,14 @@
 from tree_sitter.binding import Node, TreeCursor
 
-from handlers import StateHandler, TraverseContext
+from handlers import StateHandler
 from handlers.conditional import ConditionalStateHandler
 from handlers.input import InputStateHandler
 from handlers.linear import LinearStateHandler
 from handlers.loop import LoopStateHandler
 from handlers.output import OutputStateHandler
-from traverser import TraverseHandler
-from traverser_state import State, StateHolder
+from traversing import TraverseContext
+from traversing.traverser import TraverseHandler
+from traversing.traverser_state import State, StateHolder
 
 
 class StateMachineTraverser(TraverseHandler):
