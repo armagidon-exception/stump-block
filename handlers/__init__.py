@@ -2,10 +2,6 @@ from abc import ABC, abstractmethod
 
 from blocks import Block
 from traversing import TraverseContext
-from traversing.traverser_state import StateHolder
-
-
-
 
 
 class StateHandler(ABC):

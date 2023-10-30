@@ -1,17 +1,18 @@
-from tree_sitter import TreeCursor, Node
 from abc import ABC, abstractmethod
+
+from tree_sitter import TreeCursor, Node
 
 
 class TraverseHandler(ABC):
     @abstractmethod
     def handle_discover(
-        self, cursor: TreeCursor, prev: Node | None, prev_name: str | None
+            self, cursor: TreeCursor, prev: Node | None, prev_name: str | None
     ):
         pass
 
     @abstractmethod
     def handle_retreating(
-        self, cursor: TreeCursor, prev: Node | None, prev_name: str | None
+            self, cursor: TreeCursor, prev: Node | None, prev_name: str | None
     ):
         pass
 

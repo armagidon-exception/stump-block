@@ -5,13 +5,13 @@ from traversing.traverser_state import StateHolder
 
 class TraverseContext:
     def __init__(
-        self,
-        current_node: Node,
-        prev_node: Node,
-        current_name: str | None,
-        prev_name: str | None,
-        state_stack: list[StateHolder],
-        enter: bool,
+            self,
+            current_node: Node,
+            prev_node: Node,
+            current_name: str | None,
+            prev_name: str | None,
+            state_stack: list[StateHolder],
+            enter: bool,
     ) -> None:
         self.current_node = current_node
         self.prev_node = prev_node

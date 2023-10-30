@@ -1,12 +1,12 @@
 #!/bin/python3 -B
 
-from argparse import ArgumentParser
 import os
+from argparse import ArgumentParser
 from pprint import pprint
 
 from tree_sitter import Language, Parser
-from backend.schemdraw_backend import render
 
+from backend.schemdraw_backend import render
 from blocks import Block
 from traversing.traverser import *
 from traversing.traverser_handler import StateMachineTraverser
@@ -31,7 +31,7 @@ if __name__ == "__main__":
         '((method_declaration name: (identifier) @name (#eq? @name "Main")) @method)'
     )
 
-    blocks:list[Block] = []
+    blocks: list[Block] = []
 
     with open(args.input, "rb") as file:
         text = file.read()

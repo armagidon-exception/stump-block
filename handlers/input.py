@@ -5,8 +5,8 @@ from traversing import TraverseContext
 
 class InputStateHandler(StateHandler):
     def _handle(
-        self,
-        context: TraverseContext
+            self,
+            context: TraverseContext
     ):
         if not context.enter:
             return
