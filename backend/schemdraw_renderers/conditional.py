@@ -12,7 +12,7 @@ class ConditionalRenderer(Renderer):
 
 
     def __init__(self, branch_length: float = 1) -> None:
-        super().__init__()
+        super().__init__((4, 2))
         self.branch_length = min(1, branch_length)
 
     def render_route(self, route: list[Block], drawing: Drawing, render_dict, base_element: Element, type: str):
@@ -74,5 +74,5 @@ class ConditionalRenderer(Renderer):
 
         return (element.N, connective.mid)
 
-    def produce(self, block: Block) -> Element:
-        return Decision(W="yes", E="no").label(block.tooltip)
+    def supplier(self, block: Block, **kwargs) -> Element:
+        return Decision(W="yes", E="no", **kwargs)

@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Self
+from math import ceil, floor
 
 from schemdraw import Drawing
-from schemdraw.elements import Element, ElementDrawing
+from schemdraw.elements import Element, ElementDrawing, Label
 from schemdraw.flow import *
 from schemdraw.util import XY, Point
 
@@ -10,27 +10,38 @@ from blocks import Block
 
 
 class Renderer(ABC):
-    @abstractmethod
+    def __init__(self, min_dims=(3, 2)) -> None:
+        super().__init__()
+        self.min_dims = min_dims
+
     def render_element(
         self,
         element: Element,
         drawing: Drawing,
         block: Block,
-        render_dict: dict[str, Self],
+        render_dict: dict[str, "Renderer"],
     ) -> tuple[XY, XY]:
-        pass
+        drawing += element
+        return element.N, element.S
+
+    def compile(self, block: Block) -> Element:
+        label = self.label(block)
+        dims = tuple(map(max, zip(self.min_dims, Renderer.get_size(label))))
+        return self.supplier(block, **{'w': dims[0], 'h': dims[1]}).label(label)
+
+    def label(self, block: Block) -> str:
+        return block.tooltip
 
     @abstractmethod
-    def produce(self, block: Block) -> Element:
+    def supplier(self, block: Block, **kwargs) -> Element:
         pass
 
-    def render(self, drawing, block, render_dict) -> tuple:
-        return self.render_element(self.produce(block), drawing, block, render_dict)
+    def render(self, drawing, block, render_dict: dict[str, "Renderer"]) -> tuple:
+        return self.render_element(self.compile(block), drawing, block, render_dict)
 
-    @classmethod
-    def merge_block(cls, blocks: list[Block], render_dict: dict[str, Self]) -> Element:
+    @staticmethod
+    def merge_block(blocks: list[Block], render_dict: dict[str, "Renderer"]) -> Element:
         with Drawing(show=False) as context:
-
             context.config(unit=1)
             if blocks:
                 prev_anchor: XY | None = None
@@ -38,7 +49,7 @@ class Renderer(ABC):
                 for i in range(len(blocks)):
                     block = blocks[i]
                     renderer = render_dict[block.type]
-                    element = renderer.produce(block)
+                    element = renderer.compile(block)
                     if prev_anchor:
                         element = element.at(prev_anchor)
                     anchors = renderer.render_element(
@@ -58,7 +69,6 @@ class Renderer(ABC):
                 context.move_from(Point(prev_anchor))
                 context.set_anchor("S")
 
-
                 # Compute east and west anchors
                 basis = Point((0, 0))
                 bbox = context.get_bbox()
@@ -69,6 +79,16 @@ class Renderer(ABC):
                 context.move_from(basis, bbox.xmax, bbox.ymin + half_height)
                 context.set_anchor("E")
 
-            context.move_from(Point(context.anchors['S']))
+            context.move_from(Point(context.anchors["S"]))
 
         return ElementDrawing(context)
+
+    @staticmethod
+    def get_size(text) -> tuple[float, float]:
+        with Drawing() as d:
+            d += Label().label(text).right()
+        box = ElementDrawing(d).get_bbox(includetext=True)
+        return (
+            ceil(box.xmax) - floor(box.xmin),
+            box.ymax - box.ymin
+        )

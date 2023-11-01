@@ -1,10 +1,13 @@
 from schemdraw import Drawing
+import schemdraw
 
 from backend.schemdraw_renderers import Renderer
 from backend.schemdraw_renderers.conditional import ConditionalRenderer
 from backend.schemdraw_renderers.simple import BoxRenderer, InputRenderer, OutputRenderer, SubroutineRenderer, TerminalRenderer
 from blocks import Block
 
+
+schemdraw.svgconfig.text = 'text'
 
 def handle(route: list[Block], d: Drawing):
     render_dict = {

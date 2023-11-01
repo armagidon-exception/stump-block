@@ -1,56 +1,51 @@
-from schemdraw import Drawing
-from schemdraw.elements import Element, ElementDrawing
+from schemdraw.elements import Element
 from schemdraw.flow import Box, Data, Subroutine, Terminal
-from schemdraw.util import XY
 
 from backend.schemdraw_renderers import Renderer
 from blocks import Block
 
 
-class SimpleRenderer(Renderer):
-    def render_element(
-        self,
-        element: Element,
-        drawing: Drawing,
-        block: Block,
-        render_dict: dict[str, Renderer],
-    ) -> tuple[XY, XY]:
-        drawing += element
-        return element.N, element.S
+class BoxRenderer(Renderer):
 
-    @classmethod
-    def get_size(cls, el: Element) -> tuple[float, float]:
-        with Drawing(show=False) as d:
-            d += el
-        box = ElementDrawing(d).get_bbox(includetext=True)
-        return box.xmax - box.xmin, box.ymax - box.ymin
+    def supplier(self, block: Block, **kwargs) -> Element:
+        return Box(**kwargs)
 
 
-class BoxRenderer(SimpleRenderer):
-    def produce(self, block: Block) -> Element:
-        dims = SimpleRenderer.get_size(Box().label(block.tooltip))
-        return Box(w=dims[0], h=dims[1]).label(block.tooltip)
+class SubroutineRenderer(Renderer):
+    def __init__(self) -> None:
+        super().__init__((3.5, 2))
 
+    def supplier(self, block: Block, **kwargs) -> Element:
+        return Subroutine(**kwargs)
 
-class SubroutineRenderer(SimpleRenderer):
-    def produce(self, block: Block) -> Element:
-        return Subroutine().label(block.tooltip)
-
-
-class TerminalRenderer(SimpleRenderer):
+class TerminalRenderer(Renderer):
     def __init__(self, title: str, create_arrow: bool = True) -> None:
+        super().__init__((3, 1.25))
         self.title = title
         self.create_arrow = create_arrow
 
-    def produce(self, block: Block) -> Element:
-        return Terminal().label(self.title)
+    def supplier(self, block: Block, **kwargs) -> Element:
+        return Terminal(**kwargs)
+
+    def label(self, block: Block) -> str:
+        return self.title
 
 
-class InputRenderer(SimpleRenderer):
-    def produce(self, block: Block) -> Element:
-        return Data().label(f"Enter: {block.tooltip}")
+class InputRenderer(Renderer):
+
+    def supplier(self, block: Block, **kwargs) -> Element:
+        return Data(**kwargs)
+
+    def label(self, block: Block) -> str:
+        return f"Enter: {block.tooltip}"
 
 
-class OutputRenderer(SimpleRenderer):
-    def produce(self, block: Block) -> Element:
-        return Data().label(f"Output: {block.tooltip}")
+class OutputRenderer(Renderer):
+
+    def supplier(self, block: Block, **kwargs) -> Element:
+        return Data(**kwargs)
+
+
+    def label(self, block: Block) -> str:
+        return f"Output: {block.tooltip}"
+

@@ -1,3 +1,3 @@
 tree-sitter
 schemdraw
-latex2mathml
+ziamath
