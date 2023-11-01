@@ -24,7 +24,7 @@ if __name__ == "__main__":
         prog="stumpblock", description="Converts C# code to block diagrams"
     )
     arg_parser.add_argument("input")
-    arg_parser.add_argument('output')
+    arg_parser.add_argument("output")
     args = arg_parser.parse_args()
 
     query = CS_LANGUAGE.query(
@@ -37,7 +37,9 @@ if __name__ == "__main__":
         text = file.read()
         tree = parser.parse(text)
         cursor = query.captures(tree.root_node)[0][0].walk()
-        traverse_handler = StateMachineTraverser([StateHolder(State.LINEAR, cursor.node, blocks)])
+        traverse_handler = StateMachineTraverser(
+            [StateHolder(State.LINEAR, cursor.node, blocks)]
+        )
         blocks.append(Block("start", "Start"))
         traverse(cursor, traverse_handler)
         blocks.append(Block("end", "End"))

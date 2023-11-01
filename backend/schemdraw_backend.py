@@ -1,11 +1,8 @@
-from schemdraw import Drawing, elements
-from schemdraw.flow import Dot
+from schemdraw import Drawing
 
 from backend.schemdraw_renderers import Renderer
 from backend.schemdraw_renderers.conditional import ConditionalRenderer
-from backend.schemdraw_renderers.data import InputRenderer, OutputRenderer
-from backend.schemdraw_renderers.simple import BoxRenderer, SubroutineRenderer
-from backend.schemdraw_renderers.terminal import TerminalRenderer
+from backend.schemdraw_renderers.simple import BoxRenderer, InputRenderer, OutputRenderer, SubroutineRenderer, TerminalRenderer
 from blocks import Block
 
 
