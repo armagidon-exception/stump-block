@@ -26,8 +26,8 @@ class Renderer(ABC):
 
     def compile(self, block: Block) -> Element:
         label = self.label(block)
-        dims = tuple(map(max, zip(self.min_dims, Renderer.get_size(label))))
-        return self.supplier(block, **{'w': dims[0], 'h': dims[1]}).label(label)
+        dims = tuple(map(max, zip(self.min_dims, Renderer.get_label_size(label))))
+        return self.supplier(block, **{"w": dims[0], "h": dims[1]}).label(label)
 
     def label(self, block: Block) -> str:
         return block.tooltip
@@ -38,6 +38,10 @@ class Renderer(ABC):
 
     def render(self, drawing, block, render_dict: dict[str, "Renderer"]) -> tuple:
         return self.render_element(self.compile(block), drawing, block, render_dict)
+
+    def connect(self, drawing, element, prev_anchor) -> XY:
+        arrow = drawing.add(Arrow().down().at(prev_anchor))
+        return arrow.end
 
     @staticmethod
     def merge_block(blocks: list[Block], render_dict: dict[str, "Renderer"]) -> Element:
@@ -51,16 +55,16 @@ class Renderer(ABC):
                     renderer = render_dict[block.type]
                     element = renderer.compile(block)
                     if prev_anchor:
-                        element = element.at(prev_anchor)
+                        element = element
                     anchors = renderer.render_element(
                         element, context, block, render_dict
                     )
                     prev_anchor = anchors[1]
                     if i == 0:
                         start_anchor = anchors[0]
+
                     if i < len(blocks) - 1:
-                        context += (arrow := Arrow().at(prev_anchor).down())
-                        prev_anchor = arrow.end
+                        prev_anchor = renderer.connect(context, element, prev_anchor)
                 assert prev_anchor and start_anchor
                 # Create North anchor
                 context.move_from(Point(start_anchor))
@@ -84,11 +88,15 @@ class Renderer(ABC):
         return ElementDrawing(context)
 
     @staticmethod
-    def get_size(text) -> tuple[float, float]:
+    def get_label_size(text) -> tuple[float, float]:
         with Drawing() as d:
             d += Label().label(text).right()
         box = ElementDrawing(d).get_bbox(includetext=True)
-        return (
-            ceil(box.xmax) - floor(box.xmin),
-            box.ymax - box.ymin
-        )
+        return (ceil(box.xmax) - floor(box.xmin), box.ymax - box.ymin)
+
+    @staticmethod
+    def get_element_size(el: Element) -> tuple[float, float]:
+        with Drawing() as d:
+            d += el
+        box = ElementDrawing(d).get_bbox(includetext=True)
+        return (ceil(box.xmax) - floor(box.xmin), box.ymax - box.ymin)

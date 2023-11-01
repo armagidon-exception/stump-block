@@ -6,7 +6,6 @@ from blocks import Block
 
 
 class BoxRenderer(Renderer):
-
     def supplier(self, block: Block, **kwargs) -> Element:
         return Box(**kwargs)
 
@@ -17,6 +16,7 @@ class SubroutineRenderer(Renderer):
 
     def supplier(self, block: Block, **kwargs) -> Element:
         return Subroutine(**kwargs)
+
 
 class TerminalRenderer(Renderer):
     def __init__(self, title: str, create_arrow: bool = True) -> None:
@@ -32,7 +32,6 @@ class TerminalRenderer(Renderer):
 
 
 class InputRenderer(Renderer):
-
     def supplier(self, block: Block, **kwargs) -> Element:
         return Data(**kwargs)
 
@@ -41,11 +40,8 @@ class InputRenderer(Renderer):
 
 
 class OutputRenderer(Renderer):
-
     def supplier(self, block: Block, **kwargs) -> Element:
         return Data(**kwargs)
 
-
     def label(self, block: Block) -> str:
         return f"Output: {block.tooltip}"
-
