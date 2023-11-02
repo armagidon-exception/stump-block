@@ -27,7 +27,7 @@ if __name__ == "__main__":
     arg_parser.add_argument("output")
     args = arg_parser.parse_args()
 
-    query = CS_LANGUAGE.query(
+    main_method_query = CS_LANGUAGE.query(
         '((method_declaration name: (identifier) @name (#eq? @name "Main")) @method)'
     )
 
@@ -36,12 +36,19 @@ if __name__ == "__main__":
     with open(args.input, "rb") as file:
         text = file.read()
         tree = parser.parse(text)
-        cursor = query.captures(tree.root_node)[0][0].walk()
+        cursor = main_method_query.captures(tree.root_node)[0][0].walk()
         traverse_handler = StateMachineTraverser(
             [StateHolder(State.LINEAR, cursor.node, blocks)]
         )
         blocks.append(Block("start", "Start"))
         traverse(cursor, traverse_handler)
         blocks.append(Block("end", "End"))
-        pprint(blocks)
-        render(args.output, blocks)
+        for block in blocks:
+            print(f"Processed top-level block with type {block.type} with captured text '{block.tooltip}'")
+        print("Rendering.....")
+        try:
+            render(args.output, blocks)
+            print("Rendering done. Saved to file", args.output)
+        except Exception as e:
+            print(e)
+
