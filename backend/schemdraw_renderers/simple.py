@@ -41,7 +41,7 @@ class InputRenderer(Renderer):
 
 class OutputRenderer(Renderer):
     def supplier(self, block: Block, **kwargs) -> Element:
-        return Data(**kwargs)
+        return Box(**kwargs)
 
     def label(self, block: Block) -> str:
         return f"Output: {block.tooltip}"

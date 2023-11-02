@@ -1,12 +1,14 @@
 from abc import ABC, abstractmethod
 from math import ceil, floor
 
-from schemdraw import Drawing
+from schemdraw import Drawing, schemdraw
+from schemdraw.backends import svg
 from schemdraw.elements import Element, ElementDrawing, Label
 from schemdraw.flow import *
 from schemdraw.util import XY, Point
 
 from blocks import Block
+from xml.sax.saxutils import escape
 
 
 class Renderer(ABC):
@@ -26,8 +28,10 @@ class Renderer(ABC):
 
     def compile(self, block: Block) -> Element:
         label = self.label(block)
-        dims = tuple(map(max, zip(self.min_dims, Renderer.get_label_size(label))))
-        return self.supplier(block, **{"w": dims[0], "h": dims[1]}).label(label)
+        dims = tuple(
+            map(max, zip(self.min_dims, Renderer.get_label_size(escape(label))))
+        )
+        return self.supplier(block, **{"w": dims[0], "h": dims[1]}).label(escape(label))
 
     def label(self, block: Block) -> str:
         return block.tooltip
@@ -89,10 +93,15 @@ class Renderer(ABC):
 
     @staticmethod
     def get_label_size(text) -> tuple[float, float]:
-        with Drawing() as d:
-            d += Label().label(text).right()
-        box = ElementDrawing(d).get_bbox(includetext=True)
-        return (ceil(box.xmax) - floor(box.xmin), box.ymax - box.ymin)
+        w, h, _ = map(
+            lambda x: x / 64 * 2 + 2 * Label()._userparams.get("pad", 0.5),
+            svg.text_size(
+                text,
+                font=schemdraw.schemdrawstyle["font"],
+                size=schemdraw.schemdrawstyle["fontsize"],
+            ),
+        )
+        return (w, h)
 
     @staticmethod
     def get_element_size(el: Element) -> tuple[float, float]:

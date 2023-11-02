@@ -10,6 +10,8 @@ from blocks import Block
 
 schemdraw.svgconfig.text = 'text'
 
+
+
 def handle(route: list[Block], d: Drawing):
     render_dict = {
         "start": TerminalRenderer("Start"),

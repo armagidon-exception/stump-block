@@ -78,5 +78,5 @@ class PostLoopRenderer(Renderer):
 
         drawing.add(Arrow().down().at(loop_end_anchor))
         drawing += element
-        drawing += Wire('c', -1, '->').at(element.W).to(loop_start_anchor, 0, self.loop_back_y_offset)
+        drawing += Wire('c', -k, '->').at(element.W).to(loop_start_anchor, 0, self.loop_back_y_offset)
         return loop_start_anchor, element.S
