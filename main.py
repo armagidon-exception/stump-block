@@ -2,7 +2,6 @@
 
 import os
 from argparse import ArgumentParser
-from pprint import pprint
 
 from tree_sitter import Language, Parser
 
