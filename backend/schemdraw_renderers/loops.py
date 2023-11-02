@@ -12,7 +12,7 @@ class PreLoopRenderer(Renderer):
         self.loop_back_y_offset = loop_back_y_offset
 
     def supplier(self, block: Block, **kwargs) -> Element:
-        return Decision(**kwargs)
+        return Decision(**kwargs, S="yes", E="no")
 
     def render_element(
         self,
@@ -52,7 +52,7 @@ class PostLoopRenderer(Renderer):
         self.loop_back_y_offset = loop_back_y_offset
 
     def supplier(self, block: Block, **kwargs) -> Element:
-        return Decision(**kwargs)
+        return Decision(**kwargs, W="yes", S="no")
 
     def render_element(
         self,
@@ -73,12 +73,12 @@ class PostLoopRenderer(Renderer):
                 .right()
             )
             loop_end_anchor = body_el.S
-            k = (Renderer.get_element_size(body_el)[0] / 2) + 1
+            k = body_el.W.x
 
         drawing.add(Arrow().down().at(loop_end_anchor))
         drawing += element
         drawing += (
-            Wire("c", -k, "->")
+            Wire("c", -abs(k - element.W.x) - 1, "->")
             .at(element.W)
             .to(loop_start_anchor, 0, self.loop_back_y_offset)
         )
