@@ -37,3 +37,16 @@ class Block(object):
         condition_node = node.child(4)
         assert condition_node
         return Block("postloop", condition_node.text.decode(), {"body": []})
+
+    @staticmethod
+    def loop_from_for_statement(node: Node):
+        initializer = node.child_by_field_name("initializer")
+        condition = node.child_by_field_name("condition")
+        update = node.child_by_field_name("update")
+        assert initializer and condition and update
+
+        return Block(
+            "parameterloop",
+            f"{initializer.text.decode()}; {condition.text.decode()}; {update.text.decode()}",
+            {"body": []},
+        )

@@ -22,6 +22,7 @@ class StateMachineTraverser(TraverseHandler):
             State.CONDITION: ConditionalStateHandler(),
             State.PRE_LOOP: LoopStateHandler(),
             State.POST_LOOP: LoopStateHandler(),
+            State.PARAMETER_LOOP: LoopStateHandler()
         }
 
     def handle_discover(self, cursor: TreeCursor, prev: Node, prev_name: str | None):

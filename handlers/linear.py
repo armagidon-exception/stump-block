@@ -64,3 +64,7 @@ class LinearStateHandler(StateHandler):
             context.state_stack.append(
                 StateHolder(State.POST_LOOP, context.current_node, route)
             )
+        elif context.current_node.type == "for_statement":
+            block = Block.loop_from_for_statement(context.current_node)
+            route.append(block)
+            context.state_stack.append(StateHolder(State.PARAMETER_LOOP, context.current_node, route))
