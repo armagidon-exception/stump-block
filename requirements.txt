@@ -2,5 +2,3 @@ tree-sitter
 schemdraw
 ziamath
 latex2mathml
-cx_freeze
-wenv
