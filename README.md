@@ -19,11 +19,29 @@ A .cs file gets passed as input to the program, then it gets parsed and represen
 3. Input / Output
 4. Branching
 
+# Installation
+1. Clone the repo
+2. Install all the dependencies by running command `pip install -r requirements.txt`
+3. Install c/c++ compiler (gcc on unix, or msvc for windows)
+4. Run main.py script
+
 # How to use
-1. To denote that following variables are input variables you have to wrap them in `//input-start` `//input-end` comments (Case and punctuation matters)
-2. To denote output you have to use `Console.WriteLine()`. If argument of this function is a string literal (exception is interpolated string), then its quotes will be stripped, otherwise output will be as is
-3. Every other supported block is rendered normally
-4. Run the program passing input file as first argument and output file as second.
+## Input blocks
+```c#
+//input-start
+type x = type.Parse(Console.ReadLine())
+//input-end
+```
+Any variable definition inside `//input-start` `input-end` blocks will be recognized as input
+## Output blocks
+```c#
+Console.WriteLine("string")
+```
+To denote output you have to use `Console.WriteLine()`. If argument of this function is a string literal (exception is interpolated string), then its quotes will be stripped, otherwise output will be as is
+
+## Others
+Works as-is
+
 **Note** The program will generate file in **SVG** format. Use other tools to convert it to your preferred format.
 
 
