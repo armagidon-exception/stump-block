@@ -42,8 +42,6 @@ if __name__ == "__main__":
         blocks.append(Block("start", "Start"))
         traverse(cursor, traverse_handler)
         blocks.append(Block("end", "End"))
-        for block in blocks:
-            print(f"Processed top-level block with type {block.type} with captured text '{block.tooltip}'")
         print("Rendering.....")
         try:
             render(args.output, blocks)

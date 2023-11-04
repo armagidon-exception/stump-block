@@ -15,4 +15,6 @@ class OutputStateHandler(StateHandler):
                 )
             else:
                 route.append(Block("output", context.current_node.text.decode()))
+
+            print(f"Processed block with type {route[-1].type} with captured text '{route[-1].tooltip}'")
             context.state_stack.pop()

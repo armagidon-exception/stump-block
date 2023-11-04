@@ -19,4 +19,5 @@ class ConditionalStateHandler(StateHandler):
                 current_route = current_route[-1].routes[context.current_name]
                 block = Block.conditional_from_if_statement(context.current_node)
                 current_route.append(block)
+                print(f"Processed block with type {current_route[-1].type} with captured text '{current_route[-1].tooltip}'")
                 context.state_stack.append(StateHolder(State.CONDITION, context.current_node, current_route))

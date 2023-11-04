@@ -15,11 +15,13 @@ class LinearStateHandler(StateHandler):
                 declaration_node and declaration_node.type == "variable_declaration"
             ), "Received local_declaration_expression without variable declaration"
             route.append(Block("declaration", declaration_node.text.decode()))
+            print(f"Processed block with type {route[-1].type} with captured text '{route[-1].tooltip}'")
         elif context.current_node.type == "expression_statement":
             context_node = context.current_node.child(0)
             assert context_node, "Received expression_statement without context node"
             if context_node.type == "assignment_expression":
                 route.append(Block("assignment", context_node.text.decode()))
+                print(f"Processed block with type {route[-1].type} with captured text '{route[-1].tooltip}'")
             elif context_node.type == "invocation_expression":
                 function_node = context_node.child_by_field_name("function")
                 arguments_node = context_node.child_by_field_name("arguments")
@@ -39,6 +41,7 @@ class LinearStateHandler(StateHandler):
                     )
                 else:
                     route.append(Block("invocation", context_node.text.decode()))
+                    print(f"Processed block with type {route[-1].type} with captured text '{route[-1].tooltip}'")
         elif (
             context.current_node.type == "comment"
             and context.current_node.text.decode() == "//input-start"
@@ -49,22 +52,26 @@ class LinearStateHandler(StateHandler):
         elif context.current_node.type == "if_statement":
             block = Block.conditional_from_if_statement(context.current_node)
             route.append(block)
+            print(f"Processed block with type {route[-1].type} with captured text '{route[-1].tooltip}'")
             context.state_stack.append(
                 StateHolder(State.CONDITION, context.current_node, route)
             )
         elif context.current_node.type == "while_statement":
             block = Block.loop_from_while_statement(context.current_node)
             route.append(block)
+            print(f"Processed block with type {route[-1].type} with captured text '{route[-1].tooltip}'")
             context.state_stack.append(
                 StateHolder(State.PRE_LOOP, context.current_node, route)
             )
         elif context.current_node.type == "do_statement":
             block = Block.loop_from_do_statement(context.current_node)
             route.append(block)
+            print(f"Processed block with type {route[-1].type} with captured text '{route[-1].tooltip}'")
             context.state_stack.append(
                 StateHolder(State.POST_LOOP, context.current_node, route)
             )
         elif context.current_node.type == "for_statement":
             block = Block.loop_from_for_statement(context.current_node)
             route.append(block)
+            print(f"Processed block with type {route[-1].type} with captured text '{route[-1].tooltip}'")
             context.state_stack.append(StateHolder(State.PARAMETER_LOOP, context.current_node, route))
