@@ -19,16 +19,15 @@ class SubroutineRenderer(Renderer):
 
 
 class TerminalRenderer(Renderer):
-    def __init__(self, title: str, create_arrow: bool = True) -> None:
+    def __init__(self, create_arrow: bool = True) -> None:
         super().__init__((3, 1.25))
-        self.title = title
         self.create_arrow = create_arrow
 
     def supplier(self, block: Block, **kwargs) -> Element:
         return Terminal(**kwargs)
 
     def label(self, block: Block) -> str:
-        return self.title
+        return block.tooltip
 
 
 class InputRenderer(Renderer):

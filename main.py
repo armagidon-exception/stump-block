@@ -11,6 +11,27 @@ from traversing.traverser import *
 from traversing.traverser_handler import StateMachineTraverser
 from traversing.traverser_state import State, StateHolder
 
+
+def render_method(node, method_name):
+    blocks: list[Block] = []
+    cursor = node.walk()
+    traverse_handler = StateMachineTraverser(
+        [StateHolder(State.LINEAR, cursor.node, blocks)]
+    )
+    if method_name == "Main":
+        blocks.append(Block("start", "Start"))
+    else:
+        blocks.append(Block("start", "Start of " + method_name))
+    traverse(cursor, traverse_handler)
+    blocks.append(Block("end", "End"))
+    print("Rendering.....")
+    try:
+        render(method_name + ".svg", blocks)
+        print("Rendering done. Saved to file", method_name + ".svg")
+    except Exception as e:
+        print(e)
+
+
 if __name__ == "__main__":
     if not os.path.exists("build"):
         os.mkdir("build")
@@ -23,29 +44,16 @@ if __name__ == "__main__":
         prog="stumpblock", description="Converts C# code to block diagrams"
     )
     arg_parser.add_argument("input")
-    arg_parser.add_argument("output")
     args = arg_parser.parse_args()
 
-    main_method_query = CS_LANGUAGE.query(
-        '((method_declaration name: (identifier) @name (#eq? @name "Main")) @method)'
+    methods_query = CS_LANGUAGE.query(
+        "((method_declaration name: (identifier) @name) @method)"
     )
 
-    blocks: list[Block] = []
 
     with open(args.input, "rb") as file:
         text = file.read()
         tree = parser.parse(text)
-        cursor = main_method_query.captures(tree.root_node)[0][0].walk()
-        traverse_handler = StateMachineTraverser(
-            [StateHolder(State.LINEAR, cursor.node, blocks)]
-        )
-        blocks.append(Block("start", "Start"))
-        traverse(cursor, traverse_handler)
-        blocks.append(Block("end", "End"))
-        print("Rendering.....")
-        try:
-            render(args.output, blocks)
-            print("Rendering done. Saved to file", args.output)
-        except Exception as e:
-            print(e)
-
+        captures = methods_query.captures(tree.root_node)
+        for i in range(0, len(captures) - 1, 2):
+            render_method(captures[i][0], captures[i + 1][0].text.decode())
