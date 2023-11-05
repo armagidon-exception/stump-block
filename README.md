@@ -20,7 +20,7 @@ A .cs file gets passed as input to the program, then it gets parsed and represen
 4. Branching
 
 # Installation
-1. Clone the repo
+1. Clone the repo `git clone <url> --recursive`
 2. Install all the dependencies by running command `pip install -r requirements.txt`
 3. Install c/c++ compiler (gcc on unix, or msvc for windows)
 4. Run main.py script
@@ -38,6 +38,9 @@ Any variable definition inside `//input-start` `input-end` blocks will be recogn
 Console.WriteLine("string")
 ```
 To denote output you have to use `Console.WriteLine()`. If argument of this function is a string literal (exception is interpolated string), then its quotes will be stripped, otherwise output will be as is
+
+## Methods
+Declarations of another methods will be detected automatically and rendered as a separate SVG file.
 
 ## Others
 Works as-is
