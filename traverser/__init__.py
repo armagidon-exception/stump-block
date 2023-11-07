@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
 
 from tree_sitter import Node, TreeCursor
-
+from command import Command
 from state import State
-
 
 class TraverseContext:
     def __init__(
@@ -11,7 +10,7 @@ class TraverseContext:
         current_node: Node,
         current_name: str | None,
         state_stack: list[State],
-        commands: list[State],
+        commands: list[Command],
         enter: bool,
     ) -> None:
         self.current_node = current_node
@@ -23,7 +22,7 @@ class TraverseContext:
 
 class TraverseHandler(ABC):
     @abstractmethod
-    def handle_discover(self, cursor: TreeCursor):
+    def handle_discover(self, cursor: TreeCursor) -> bool:
         pass
 
     @abstractmethod
@@ -33,14 +32,15 @@ class TraverseHandler(ABC):
 
 def traverse(cursor: TreeCursor, handler: TraverseHandler):
     handler.handle_discover(cursor)
+    handled = False
     while True:
-        if cursor.goto_first_child() or cursor.goto_next_sibling():
-            handler.handle_discover(cursor)
+        if not handled and cursor.goto_first_child() or cursor.goto_next_sibling():
+            handled = handler.handle_discover(cursor)
         else:
             while True:
                 if not cursor.goto_parent():
                     return
                 handler.handle_retreating(cursor)
                 if cursor.goto_next_sibling():
-                    handler.handle_discover(cursor)
+                    handled = handler.handle_discover(cursor)
                     break

@@ -1,13 +1,16 @@
-class Block:
-    def __init__(self, type: str, **args) -> None:
-        self.type = type
-        self.args = args
-        for k, v in self.args.items():
-            setattr(self, k, v)
+from abc import ABC, abstractmethod
 
-class Chunk:
-    def __init__(self, id: str, enter_marker=False, exit_marker=False) -> None:
-        self.id = id
-        self.enter_marker = enter_marker
-        self.exit_marker = exit_marker
-        self.blocks = []
+from traverser import TraverseContext
+
+
+class Clause(ABC):
+    def __init__(self) -> None:
+        super().__init__()
+
+    @abstractmethod
+    def trigger(self, context: TraverseContext) -> bool:
+        pass
+
+    @abstractmethod
+    def handle(self, context: TraverseContext) -> bool:
+        pass

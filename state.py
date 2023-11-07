@@ -1,7 +1,9 @@
 from enum import Enum, auto, unique
 
+from command import Command
+
 @unique
-class State(Enum):
+class StateType(Enum):
     LINEAR = auto()  # State when algorithm is executed sequentially
     INPUT = auto()  # State when algorithm is trying to take input
     OUTPUT = auto()  # State when algorithm is trying to output
@@ -11,3 +13,8 @@ class State(Enum):
     PRE_LOOP = auto()
     POST_LOOP = auto()
     LOOPING = auto()
+
+class State:
+    def __init__(self, type: StateType, commands: list[Command]) -> None:
+        self.type = type
+        self.commands = commands
