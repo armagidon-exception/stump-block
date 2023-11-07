@@ -1,18 +1,21 @@
 from tree_sitter import TreeCursor
+from clause import Clause
+from clause.utils import MetaCommentStateClause
 from command import Command
-from data import Clause
-from state import State
-from traverser import TraverseContext, TraverseHandler
+from state import State, StateType
+from traverser import TraverseContext, Traverser
 
 
-class ParserTraverser(TraverseHandler):
-    def __init__(self, state_stack: list[State]) -> None:
+class ParserTraverser(Traverser):
+    def __init__(self) -> None:
         super().__init__()
-        self.state_stack = state_stack
-        self.clauses: list[Clause] = []
+        self.state_stack: list[State] = []
+        self.clauses: list[Clause] = [
+            MetaCommentStateClause('input', StateType.INPUT)
+        ]
         self.commands: list[Command] = []
 
-    def handle_discover(self, cursor: TreeCursor) -> bool:
+    def handle_discover(self, cursor: TreeCursor):
         context = TraverseContext(
             cursor.node, cursor.field_name, self.state_stack, self.commands, True
         )
@@ -28,4 +31,4 @@ class ParserTraverser(TraverseHandler):
         )
         for clause in self.clauses:
             if clause.trigger(context):
-                clause.handle(context)
+                return clause.handle(context)

@@ -5,7 +5,12 @@ import logging
 
 from parsing import parse_file
 
-logging.basicConfig(encoding="utf-8", level=logging.INFO)
+logging.basicConfig(
+    encoding="utf-8",
+    level=logging.INFO,
+    format="[%(levelname)s] %(asctime)s > %(message)s",
+    datefmt="%H:%M:%S",
+)
 
 
 def process_file(filename: str):

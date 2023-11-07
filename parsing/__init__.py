@@ -3,6 +3,7 @@ import logging
 
 from tree_sitter import Language, Parser
 from command import Command
+from traverser.simple import ParserTraverser
 from utils import resolve_dependency_path
 
 if not os.path.exists(resolve_dependency_path("build")):
@@ -30,7 +31,6 @@ METHOD_QUERY = CS_LANGUAGE.query(
 def parse_file(filename: str) -> dict[str, list[Command]]:
     parser = Parser()
     parser.set_language(CS_LANGUAGE)
-
     try:
         with open(filename, "rb") as file:
             root_node = parser.parse(file.read()).root_node
@@ -38,7 +38,11 @@ def parse_file(filename: str) -> dict[str, list[Command]]:
             methods = map(lambda x: tuple(map(lambda y: y[0], x)), filter(lambda x: x[0][1] == "method", zip(captures, captures[1:])))
             output = {}
             for method in methods:
-                print(method[0].text, method[1].text.decode())
+                method_name = method[1].text.decode()
+                logging.info(f"Parsing method {method_name}...")
+                traverser = ParserTraverser()
+                traverser.traverse(method[0].walk())
+                #print(method[0].text, method[1].text.decode())
             return output
     except Exception as e:
         logging.error(*e.args)

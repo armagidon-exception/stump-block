@@ -12,5 +12,5 @@ class Clause(ABC):
         pass
 
     @abstractmethod
-    def handle(self, context: TraverseContext) -> bool:
+    def handle(self, context: TraverseContext):
         pass

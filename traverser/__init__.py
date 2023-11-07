@@ -19,8 +19,24 @@ class TraverseContext:
         self.enter = enter
         self.commands = commands
 
+    @property
+    def last_state(self):
+        if not self.state_stack:
+            return None
+        return self.state_stack[-1]
 
-class TraverseHandler(ABC):
+    @property
+    def text(self):
+        return self.current_node.text.decode()
+
+    def first_child_by_type(self, type: str):
+        for child in self.current_node.children:
+            if child.type == type:
+                return child
+        return None
+
+
+class Traverser(ABC):
     @abstractmethod
     def handle_discover(self, cursor: TreeCursor) -> bool:
         pass
@@ -29,18 +45,17 @@ class TraverseHandler(ABC):
     def handle_retreating(self, cursor: TreeCursor):
         pass
 
+    def traverse(self, cursor: TreeCursor):
+        self.handle_discover(cursor)
+        while True:
+            if cursor.goto_first_child() or cursor.goto_next_sibling():
+                self.handle_discover(cursor)
+            else:
+                while True:
+                    if not cursor.goto_parent():
+                        return
+                    self.handle_retreating(cursor)
+                    if cursor.goto_next_sibling():
+                        self.handle_discover(cursor)
+                        break
 
-def traverse(cursor: TreeCursor, handler: TraverseHandler):
-    handler.handle_discover(cursor)
-    handled = False
-    while True:
-        if not handled and cursor.goto_first_child() or cursor.goto_next_sibling():
-            handled = handler.handle_discover(cursor)
-        else:
-            while True:
-                if not cursor.goto_parent():
-                    return
-                handler.handle_retreating(cursor)
-                if cursor.goto_next_sibling():
-                    handled = handler.handle_discover(cursor)
-                    break
