@@ -1,37 +1,44 @@
 class Command:
-    def __init__(self, identifier: str, **args) -> None:
-        self.identifier = identifier
-        self.args = args
-
-        for k, v in self.args.items():
+    def __init__(self, **args) -> None:
+        for k, v in args.items():
             setattr(self, k, v)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({', '.join(['{}={!r}'.format(k, v) for k, v in self.__dict__.items()])})"
 
 
 class OpenChunk(Command):
     def __init__(self, chunk_name: str, **args) -> None:
-        super().__init__("open-chunk", chunk_name=chunk_name, **args)
+        super().__init__(chunk_name=chunk_name, **args)
+        self.chunk_name = chunk_name
 
 
 class CloseChunk(Command):
     def __init__(self, **args) -> None:
-        super().__init__("close-chunk", **args)
+        super().__init__(**args)
 
 
 class ReturnStatement(Command):
     def __init__(self, **args) -> None:
-        super().__init__("return", **args)
+        super().__init__(**args)
 
 
 class ContinueStatement(Command):
     def __init__(self, **args) -> None:
-        super().__init__("continue", **args)
+        super().__init__(**args)
 
 
 class BreakStatement(Command):
     def __init__(self, **args) -> None:
-        super().__init__("break", **args)
+        super().__init__(**args)
+
+
+class CreateBreak(Command):
+    def __init__(self, **args) -> None:
+        super().__init__(**args)
 
 
 class PlaceBlock(Command):
-    def __init__(self, block_type: str, routes: list[str], **args) -> None:
-        super().__init__("block", block_type=block_type, routes=routes, **args)
+    def __init__(self, block_type: str, **args) -> None:
+        super().__init__(block_type=block_type, **args)
+        self.block_type = block_type

@@ -1,9 +1,10 @@
 #!/bin/python3
 
-from argparse import ArgumentParser
 import logging
+from argparse import ArgumentParser
+from pprint import pprint
 
-from parsing import parse_file
+from parsing import parse_file, post_process_loops
 
 logging.basicConfig(
     encoding="utf-8",
@@ -14,8 +15,11 @@ logging.basicConfig(
 
 
 def process_file(filename: str):
-    parse_file(filename)
-    pass
+    logging.info(f"Parsing AST of file {filename}")
+    parsing_result = parse_file(filename)
+    logging.info(f"Post processing rendering commands...")
+    parsing_result = post_process_loops(parsing_result)
+    logging.info(f"Rendering file {filename}")
 
 
 if __name__ == "__main__":
