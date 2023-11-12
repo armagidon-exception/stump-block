@@ -2,9 +2,9 @@
 
 import logging
 from argparse import ArgumentParser
-from pprint import pprint
 
 from parsing import parse_file, post_process_loops
+from render import render
 
 logging.basicConfig(
     encoding="utf-8",
@@ -20,6 +20,7 @@ def process_file(filename: str):
     logging.info(f"Post processing rendering commands...")
     parsing_result = post_process_loops(parsing_result)
     logging.info(f"Rendering file {filename}")
+    render(parsing_result)
 
 
 if __name__ == "__main__":

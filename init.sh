@@ -1,3 +1,5 @@
 source .venv/bin/activate
-pip install schemdraw
+cd schemdraw
+pip install ./
+cd ..
 pip install -r requirements.txt

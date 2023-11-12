@@ -20,8 +20,10 @@ class ParserTraverser(Traverser):
             InputMetaClause(),
             InputClause(),
             DeclarationClause(),
-            BlockClause('invocation_expression', OutputClause('Console.WriteLine')),
-            BlockClause('invocation_expression', OutputClause('Console.Write')),
+            BlockClause('invocation_expression',
+                        OutputClause('Console.WriteLine')),
+            BlockClause('invocation_expression',
+                        OutputClause('Console.Write')),
             BlockClause('invocation_expression', SubroutineClause()),
             BlockClause('assignment_expression', AssignmentExpressionClause())
         ]
@@ -32,7 +34,8 @@ class ParserTraverser(Traverser):
         for statement_type, statement_clause in ALL_STATEMENTS.items():
             self.clauses.append(StatementClause(BlockClause(
                 statement_type, statement_clause), {StateType.IF_STATEMENT, StateType.PARAMETER_LOOP, StateType.ITERATOR}))
-            self.clauses.append(UnnamedStatementClause(BlockClause(statement_type, statement_clause), {StateType.PRE_LOOP, StateType.POST_LOOP}))
+            self.clauses.append(UnnamedStatementClause(BlockClause(
+                statement_type, statement_clause), {StateType.PRE_LOOP, StateType.POST_LOOP}))
 
         self.commands: list[Command] = []
         self.state_stack: list[State] = [
