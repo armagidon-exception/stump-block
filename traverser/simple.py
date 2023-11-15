@@ -47,20 +47,24 @@ class ParserTraverser(Traverser):
         if not self.cursor.node.is_named:
             return
 
-        for clause in self.clauses:
-            context = TraverseContext(
-                self.cursor.node,
-                self.cursor.field_name,
-                self.state_stack,
-                self.commands,
-            )
-            if (clause.trigger_enter(context) and context.last_state.type in clause.states()):
-                logging.info(
-                    f"Node of type '{context.current_node.type}' was handled by handler '{clause.__class__.__name__}' >")
-                clause.handle_enter(context)
-                if context.mark:
-                    self.marker_clauses[self.cursor.node.id] = clause
-                break
+        try:
+            for clause in self.clauses:
+                context = TraverseContext(
+                    self.cursor.node,
+                    self.cursor.field_name,
+                    self.state_stack,
+                    self.commands,
+                )
+                if (clause.trigger_enter(context) and context.last_state.type in clause.states()):
+                    logging.info(
+                        f"Node of type '{context.current_node.type}' was handled by handler '{clause.__class__.__name__}' >")
+                    clause.handle_enter(context)
+                    if context.mark:
+                        self.marker_clauses[self.cursor.node.id] = clause
+                    break
+        except Exception as e:
+            print(self.cursor.node.text.decode())
+            exit()
 
     def handle_retreating(self):
         if not self.cursor.node.is_named:

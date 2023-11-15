@@ -39,8 +39,10 @@ class OutputClause(InvocationExpressionClause):
     def handle_enter(self, context: TraverseContext):
         arguments = context.current_node.child_by_field_name("arguments")
         assert arguments
+        tooltip = arguments.named_children[0].text.decode() if arguments.named_children else '\n'
+
         context.commands.append(PlaceBlock(
-            "output", output=arguments.named_children[0].text.decode()))
+            "output", output=tooltip))
 
 class AssignmentExpressionClause(AnyClause):
     def __init__(self) -> None:
