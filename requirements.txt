@@ -1,4 +1,4 @@
-tree-sitter
-schemdraw
-ziamath
-latex2mathml
+tree-sitter==0.20.2
+schemdraw==0.19
+latex2mathml==3.77.0
+setuptools==75.3.0

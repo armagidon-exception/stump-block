@@ -21,7 +21,7 @@ class PreLoopRenderer(Renderer):
         block: Block,
         render_dict: dict[str, "Renderer"],
     ) -> tuple[XY, XY]:
-        drawing += element.drop("S")
+        drawing.add(element.drop("S"))
         route = block.routes["body"]
         loop_end_anchor = element.S
         k = 1
@@ -34,14 +34,14 @@ class PreLoopRenderer(Renderer):
                 .right()
             )
             loop_end_anchor = body_el.S
-            k = (Renderer.get_element_size(body_el)[0] / 2) + 1
+            k = (Renderer.get_element_size(body_el)[0]) + 1
 
-        drawing += Line().down().at(loop_end_anchor)
-        drawing += (
-            loop := Wire("c", -k, "->").to(element.N, 0, self.loop_back_y_offset)
+        drawing.add(Line().down().at(loop_end_anchor))
+        drawing.add(
+            loop := Wire("c", k=-k, arrow="->").to(element.N, 0, self.loop_back_y_offset)
         )
-        drawing += Line().at(element.E).right().length(k)
-        drawing += Line().down().toy(loop.start)
+        drawing.add(Line().at(element.E).right().length(k))
+        drawing.add(Line().down().toy(loop.start))
 
         return (element.N, drawing.here)
 
@@ -76,9 +76,9 @@ class PostLoopRenderer(Renderer):
             k = body_el.W.x
 
         drawing.add(Arrow().down().at(loop_end_anchor))
-        drawing += element
-        drawing += (
-            Wire("c", -abs(k - element.W.x) - 1, "->")
+        drawing.add(element)
+        drawing.add(
+            Wire("c", k=-abs(k - element.W.x) - 1, arrow="->")
             .at(element.W)
             .to(loop_start_anchor, 0, self.loop_back_y_offset)
         )
@@ -86,10 +86,31 @@ class PostLoopRenderer(Renderer):
 
 
 class LoopElement(Box):
-    def __init__(self, w: float = 5, h: float = 1.5, **kwargs):
-        super().__init__(w, h, **kwargs)
+    _element_defaults = {
+        'w': 3,
+        'h':1.5,
+        'lblloc': 'center',
+        'lblofst': 0,
+        'theta':0
+    }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-        self.segments = []
+    def _set_anchors(self):
+        super()._set_anchors()
+        w, h = self.params['w'], self.params['h']
+        x = w - h
+        self.anchors['N'] = ( 0, 0 )
+        self.anchors['S'] = ( 0, -h )
+        self.anchors['E'] = ( 0.5*x + 0.5*h, -0.5*h )
+        self.anchors['W'] = ( -0.5*x - 0.5*h, -0.5*h )
+        self.anchors['center'] = ( 0, -0.5*h )
+
+    def _set_segments(self):
+        super()._set_segments()
+        self.segments.clear()
+        w, h = self.params['w'], self.params['h']
+
         x = w - h
         self.segments.append(
             SegmentPoly(
@@ -104,14 +125,8 @@ class LoopElement(Box):
                 ]
             )
         )
-        self.anchors['N'] = (0, 0)
-        self.anchors['S'] = (0, -h)
-        self.anchors['E'] = (0.5*x + 0.5*h, -0.5*h)
-        self.anchors['W'] = (-0.5*x - 0.5*h, -0.5*h)
-        self.anchors['center'] = (0, -0.5*h)
-        self.params['lblloc'] = 'center'
 
-    pass
+
 
 
 class ParameterLoopRenderer(Renderer):
@@ -119,27 +134,22 @@ class ParameterLoopRenderer(Renderer):
         super().__init__((5, 1.5))
 
     def render_element(self, element: Element, drawing: Drawing, block: Block, render_dict: dict[str, "Renderer"]) -> tuple[XY, XY]:
-        drawing += element.drop("S")
+        drawing.add(element.drop("S"))
         route = block.routes["body"]
         loop_end_anchor = element.S
-        k = 1
+        k = element.params['w']
         if route:
             arrow = drawing.add(Arrow().down().at(element.S))
-            body_el = drawing.add(
-                Renderer.merge_block(route, render_dict)
-                .anchor("N")
-                .at(arrow.end)
-                .right()
-            )
+            body_el = drawing.add(Renderer.merge_block(route, render_dict).anchor("N").at(arrow.end).right())
             loop_end_anchor = body_el.S
-            k = (Renderer.get_element_size(body_el)[0] / 2) + 1
+            k = (Renderer.get_element_size(body_el)[0]) + 1
 
-        drawing += Line().down().at(loop_end_anchor)
-        drawing += (
-            loop := Wire("c", -k, "->").to(element.W)
-        )
-        drawing += Line().at(element.E).right().length(k)
-        drawing += Line().down().toy(loop.start)
+        iterout: Line = Line().down().length(2).at(loop_end_anchor).anchor('start')
+        drawing.add(iterout)
+        wi = Wire('c', k=-k, arrow='->').at(iterout.end).to(element.W)
+        drawing.add(wi)
+
+        drawing.add(Wire('-|', arrow='-').at(element.E).to((iterout.end[0] + k, iterout.end[1])))
 
         return (element.N, drawing.here)
 

@@ -19,3 +19,9 @@ class TraverseContext:
         self.prev_name = prev_name
         self.state_stack = state_stack
         self.enter = enter
+
+    def get_first_child_of_type(self, type: str) -> Node | None:
+        for child in self.current_node.children:
+            if child.type == type:
+                return child
+        return None

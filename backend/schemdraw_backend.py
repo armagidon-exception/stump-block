@@ -40,5 +40,6 @@ def handle(route: list[Block], d: Drawing):
 
 
 def render(filename: str, route: list[Block]):
-    with Drawing(file=filename, show=False) as d:
-        handle(route, d)
+    d = Drawing(show=False, file=filename)
+    handle(route, d)
+    d.draw(show=False)

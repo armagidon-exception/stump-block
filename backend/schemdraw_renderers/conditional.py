@@ -39,9 +39,9 @@ class ConditionalRenderer(Renderer):
             assert base_anchor
             conseq_element = conseq_element.anchor("N").at(base_anchor, dx, -2)
 
-            drawing += conseq_element
+            drawing.add(conseq_element)
 
-            drawing += Wire("-|", arrow="->").at(base_anchor).to(conseq_element.N)
+            drawing.add(Wire("-|", arrow="->").at(base_anchor).to(conseq_element.N))
             return conseq_element.S, conseq_height
         elif type == "consequence":
             return base_element.W, 0
@@ -57,7 +57,7 @@ class ConditionalRenderer(Renderer):
         block: Block,
         render_dict: dict[str, Renderer],
     ) -> XY | tuple[Element, str]:
-        drawing += element.drop("S")
+        drawing.add(element.drop("S"))
         conseq_route = block.routes["consequence"]
         alter_route = block.routes["alternative"]
 
