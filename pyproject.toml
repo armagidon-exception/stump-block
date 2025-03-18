@@ -1,0 +1,4 @@
+[project]
+name="stumpblock"
+version = "1.0.0"
+dependencies = ["setuptools", "tree-sitter", "latex2mathml", "schemdraw"]
